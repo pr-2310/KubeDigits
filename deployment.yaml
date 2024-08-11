@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: digit-recognizer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: digit-recognizer
+  template:
+    metadata:
+      labels:
+        app: digit-recognizer
+    spec:
+      containers:
+      - name: digit-recognizer
+        image: pc3427/digit-recognizer:v2  # Update the image tag to v2
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: model-storage
+          mountPath: /mnt
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: pc3427pvc

@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pc3427trainjob1
+spec:
+  template:
+    metadata:
+      name: pc3427trainjob1
+    spec:
+      containers:
+      - name: train
+        image: pc3427/pc3427-cluster-1:v1
+        volumeMounts:
+        - name: pc3427pvc
+          mountPath: /mnt
+      restartPolicy: Never
+      volumes:
+        - name: pc3427pvc
+          persistentVolumeClaim:
+            claimName: pc3427pvc

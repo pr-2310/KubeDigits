@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Digit Recognizer</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+            var isDrawing = false;
+
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            function startDrawing(e) {
+                isDrawing = true;
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+                context.beginPath();
+                context.moveTo(lastX, lastY);
+                context.lineTo(e.offsetX, e.offsetY);
+                context.stroke();
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            }
+
+            function stopDrawing() {
+                isDrawing = false;
+            }
+
+            $('#clear-btn').click(function() {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                $('#result').text('');
+            });
+
+            $('#predict-btn').click(function() {
+                var imageData = canvas.toDataURL();
+                $.ajax({
+                    type: 'POST',
+                    url: '/predict',
+                    data: {image: imageData},
+                    success: function(response) {
+                        $('#result').text('Predicted Digit: ' + response.prediction);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Digit Recognizer</h1>
+    <canvas id="canvas" width="280" height="280" style="border: 1px solid #000;"></canvas>
+    <br>
+    <button id="clear-btn">Clear</button>
+    <button id="predict-btn">Predict</button>
+    <br>
+    <h2 id="result"></h2>
+</body>
+</html>
